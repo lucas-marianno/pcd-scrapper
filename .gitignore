@@ -1,0 +1,19 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Envirenment variables
+.env
+
+# requests_cache files
+__cached_session__.sqlite
+
+# bruno-collection
+bruno-collection/

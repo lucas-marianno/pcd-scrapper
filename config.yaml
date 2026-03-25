@@ -1,0 +1,25 @@
+# 1. Crie uma conta de email anônima
+# Observação: NÃO UTLIZE UMA CONTA DE EMAIL EXISTENTE, é altamente recomendado que crie uma conta nova e descartável. Utlize um provedor anônimo de email como Proton ou Tuta. (Por esse programa ser um bot de automação, é muito provável que a conta utlizada seja banida após pouco tempo de uso)
+#
+# 2. Crie uma conta empregos.com
+# - acesse o site: https://b2b.empregos.com.br/empresa/cadastro/comecar-cadastro
+# - crie uma conta com o cargo: 'Gerente de recrutamento e seleção'
+# - vincule sua conta a um CNPJ, utilize uma empresa pública como Linkedin, Google, Facebook etc.
+# Observação: NÃO UTILIZE O CNPJ DA SUA EMPRESA, é altamente provável que ele será banido!
+#
+# 3. Insira abaixo o email e senha criados nos passos anteriores
+login:
+  username: "example@protonmail.com" # email
+  password: "example.password"
+
+# Os termos dos filtros devem ser exatamente iguais aos exibidos no site:
+# - devem respeitar capitalização (maiúscula / minúscula)
+# - devem respeitar acentuação
+# - devem respeitar espaçamento
+search: 
+  key: "Auxiliar administrativo" # Cargo procurado
+  location: "São Bernardo do Campo, SP" # Cidade desejada
+  disability_type: "Pessoa com deficiência física" # Tipo da necessidade especial
+
+output_dir: "" # O endereço da pasta que receberá os documentos .pdf
+
