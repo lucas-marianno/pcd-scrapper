@@ -1,3 +1,6 @@
+import requests
+
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 from src.config.script_config import ScriptConfig
 from src.dto.candidate_response import CandidateResponse
 from src.repository.api_repository import ApiRepository
@@ -7,26 +10,63 @@ class ApiService:
     repository: ApiRepository
     config: ScriptConfig
 
-    def __init__(self, repository: ApiRepository) -> None:
+    def __init__(self, repository: ApiRepository, script_config: ScriptConfig) -> None:
         self.repository = repository
-        self.config = repository.script_config
+        self.config = script_config
 
-    def acquire_auth_token(self) -> str:
-        login_response = self.repository.post_login_request()
+    def fetch_auth_token(self) -> str:
+        login_response = self.repository.post_login_request(
+            self.config.username,
+            self.config.password,
+        )
         token: str = login_response["token"]
         return token
 
+    def get_geolocation_coordinate(self, auth_token: str):
+        response = self.repository.get_geolocation(
+            auth_token, self.config.search_location
+        )
+
+        coordinates = response[0]["geoCoordinates"]
+
+        return coordinates
+
     def fetch_candidates_ids(
-        self, auth_token: str, page_limit=float("inf")
+        self, auth_token: str, search_location_coordinates: str
     ) -> list[int]:
+        page_limit = (
+            self.config.search_page_limit
+            if self.config.is_debug_enabled
+            else float("inf")
+        )
+
         print("fetching candidate IDs")
 
         id_list: list[int] = []
         p = 0
+        retry_count = 0
+        retry_limit = self.config.retry_limit
         while True:
-            response = parse_candidate_ids(
-                self.repository.get_list_of_candidate_id(auth_token, p)
-            )
+            json_response: any
+            try:
+                json_response = self.repository.post_candidate_search(
+                    auth_token,
+                    self.config.search_key,
+                    search_location_coordinates,
+                    self.config.search_disability,
+                    p,
+                )
+                retry_count = 0
+            except requests.exceptions.Timeout:
+                print(f"Request timeout! try n# {retry_count} of {retry_limit}")
+
+                retry_count += 1
+                continue
+            except Exception as e:
+                print(e)
+                continue
+
+            response = parse_candidate_ids(json_response)
             id_list.extend(response.candidate_ids)
 
             if p == 0:
@@ -38,14 +78,87 @@ class ApiService:
                     f" in {total_pages} pages"
                 )
 
-            print(f"current page: {p}")
+            print(f"current page: {p} of {total_pages}")
 
-            if p < total_pages and p < page_limit:
-                p += 1
-            else:
+            is_loop_over = p >= total_pages or p >= page_limit
+
+            if is_loop_over:
                 break
+            elif retry_count > 0 and retry_count <= retry_limit:
+                continue
+            else:
+                p += 1
 
         return id_list
+
+    def download_cv(self, id_list: list[int]):
+
+        file_limit = (
+            self.config.cv_download_limit if self.config.is_debug_enabled else None
+        )
+
+        if file_limit is not None:
+            id_list = id_list[0:file_limit]
+
+        retry_count = 0
+        retry_limit = self.config.retry_limit
+
+        i = 0
+        while i < len(id_list):
+            id = id_list[i]
+
+            try:
+                download_url = (
+                    f"{self.repository.api_config.download_url}/{id}?print=true"
+                )
+                output_filename = (
+                    f"{self.config.output_dir}"
+                    f"{self.config.search_location}/"
+                    f"{self.config.search_key}/"
+                    f"{self.config.search_disability}/{i + 1}.pdf"
+                )
+                save_as_pdf(download_url, output_filename)
+
+                retry_count = 0
+
+            except PlaywrightTimeoutError:
+                print(f"Request timeout! try n# {retry_count} of {retry_limit}")
+
+                retry_count += 1
+                continue
+            except Exception as e:
+                print(e)
+                continue
+
+            if retry_count > 0 and retry_count <= retry_limit:
+                continue
+            else:
+                i += 1
+
+
+def save_as_pdf(download_url, output_filename):
+    with sync_playwright() as p:
+        # Launch a headless browser
+        browser = p.chromium.launch(headless=False)
+        page = browser.new_page()
+
+        # 1. Load the HTML content directly
+        page.goto(download_url)
+        # page.set_content(html_str)
+
+        # 2. Give the CSS/images a moment to load
+        page.wait_for_load_state("networkidle")
+
+        # 3. Print to PDF
+        page.pdf(
+            path=output_filename,
+            format="A4",
+            print_background=True,  # Keeps colors and images
+            margin={"top": "1cm", "bottom": "1cm", "left": "1cm", "right": "1cm"},
+        )
+
+        browser.close()
+        print(f"Successfully saved: {output_filename}")
 
 
 def parse_candidate_ids(json_response) -> CandidateResponse:

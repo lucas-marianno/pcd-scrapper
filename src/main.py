@@ -8,16 +8,29 @@ def main():
     api_config = ApiConfig("src/api_config.yaml")
     script_config = ScriptConfig("config.yaml")
     repository = ApiRepository(api_config, script_config)
-    service = ApiService(repository)
+    service = ApiService(repository, script_config)
+
+    if script_config.is_debug_enabled:
+        print(
+            "----------------------------------------------\n"
+            "----------- DEBUG MODE ENABLED ---------------\n"
+            "----------------------------------------------\n"
+        )
 
     # acquire auth token
-    token = service.acquire_auth_token()
-    print("got token!\n", token)
+    auth_token = service.fetch_auth_token()
+    print("got token!\n", auth_token)
+
+    # get location coordinates
+    coordinates = service.get_geolocation_coordinate(auth_token)
 
     # fetch id list
-    id_list = service.fetch_candidates_ids(token, 3)
-    print(f"got {len(id_list)} IDs!")
-    print(id_list)
+    id_list = service.fetch_candidates_ids(auth_token, coordinates)
+
+    resp = input(f"Foram encontrados {len(id_list)} candidatos! Deseja iniciar o download??? (y/n)")
+    if resp != "y":
+        print("download cancelado. IDs encontrados:")
+        print(id_list)
 
     # download each cv
-    print("unimplemented")
+    service.download_cv(id_list)

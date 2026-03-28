@@ -1,3 +1,5 @@
 api_config:
-  login_url:  "https://gatewayb2b.empregos.com.br/login2"
+  login_url: "https://gatewayb2b.empregos.com.br/login2"
+  geolocation_url: "https://gatewaywhitelabel.empregos.com.br/autocomplete/Location"
   search_url: "https://gatewaywhitelabel.empregos.com.br/candidate/search/auth"
+  download_url: "https://b2b.empregos.com.br/curriculos/pdf"

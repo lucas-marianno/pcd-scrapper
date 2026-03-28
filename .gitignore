@@ -17,3 +17,9 @@ __cached_session__.sqlite
 
 # bruno-collection
 bruno-collection/
+
+# outputs
+output/
+
+# sandbox
+sandbox/

@@ -17,6 +17,14 @@ class ScriptConfig:
     search_location: str
     search_disability: str
 
+    output_dir: str
+
+    retry_limit: int
+
+    is_debug_enabled: bool
+    search_page_limit: int | None
+    cv_download_limit: int | None
+
     def __init__(self, config_file_name: str):
 
         # init config from .env
@@ -37,6 +45,16 @@ class ScriptConfig:
             self.search_key = config["search"]["key"]
             self.search_location = config["search"]["location"]
             self.search_disability = config["search"]["disability_type"]
+
+            self.output_dir = config["output_dir"]
+
+            self.retry_limit = config["retry_limit"]
+
+            self.is_debug_enabled = config["debug_mode"]["enabled"] or False
+
+            if self.is_debug_enabled:
+                self.search_page_limit = config["debug_mode"]["search_page_limit"]
+                self.cv_download_limit = config["debug_mode"]["cv_download_limit"]
 
     @override
     def __str__(self):

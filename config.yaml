@@ -1,13 +1,30 @@
-# 1. Crie uma conta de email anônima
-# Observação: NÃO UTLIZE UMA CONTA DE EMAIL EXISTENTE, é altamente recomendado que crie uma conta nova e descartável. Utlize um provedor anônimo de email como Proton ou Tuta. (Por esse programa ser um bot de automação, é muito provável que a conta utlizada seja banida após pouco tempo de uso)
+# Esse programa é um bot de automação, então é muito provável que a conta e o CNPJ utlizados sejam banidos após pouco tempo de uso. Portanto, utilize uma conta anônima e temporária.
 #
-# 2. Crie uma conta empregos.com
-# - acesse o site: https://b2b.empregos.com.br/empresa/cadastro/comecar-cadastro
-# - crie uma conta com o cargo: 'Gerente de recrutamento e seleção'
-# - vincule sua conta a um CNPJ, utilize uma empresa pública como Linkedin, Google, Facebook etc.
-# Observação: NÃO UTILIZE O CNPJ DA SUA EMPRESA, é altamente provável que ele será banido!
+# NÃO UTILIZE SUA CONTA PESSOAL
+# NÃO UTILIZE O CNPJ DA SUA EMPRESA, é altamente provável que ele será banido!
 #
-# 3. Insira abaixo o email e senha criados nos passos anteriores
+# 1. Adquira um email temporário em https://temp-mail.org/
+# - salve este email no campo `username` abaixo
+# 
+# 2. Adquira um CNPJ aleatório em https://www.4devs.com.br/gerador_de_cnpj
+# - esse CNPJ será utilizado apenas cara criar a conta
+#
+# 3. Crie uma conta empregos.com acessando em https://b2b.empregos.com.br/empresa/cadastro/comecar-cadastro
+# - insira um nome e sobrenome qualquer
+# - insira um número de celular qualquer
+# - selecione o cargo 'Gerente de recrutamento e seleção'
+# - selecione 'Para minha empresa'
+# - insira o endereço de mail adquirido no primeiro passo
+# - crie uma senha e salve ela no campo `password` abaixo
+# - avance para a próxima fase e insira o CNPJ aleatório adquirido anteriormente
+# - avance para a próxima etapa e preencha os campos aleatóriamente
+# - clique em continuar / criar / avançar para concluir o cadastro
+#
+# 4. Pronto, agora você já tem uma conta temporária Empregos.com e pode utilizá-la sem medo de sofrer qualquer sanção.
+# - ATENÇÃO: a conta criada é temporária e tem duração de 24h. Você precisará repetir os passos anteriores diariamente!
+# - Observação: Caso você não queira criar uma conta todos os dias, você pode criar um email permanente e anônimo usando ProtonMail, mas você precisará cadastrar um número de telefone particular seu para fins de autenticação.
+#
+# 5. Insira abaixo o email e senha criados nos passos anteriores
 login:
   username: "example@protonmail.com" # email
   password: "example.password"
@@ -17,9 +34,15 @@ login:
 # - devem respeitar acentuação
 # - devem respeitar espaçamento
 search: 
-  key: "Auxiliar administrativo" # Cargo procurado
-  location: "São Bernardo do Campo, SP" # Cidade desejada
+  key: "Vendedor" # Cargo procurado
+  location: "Belo horizonte, MG" # Cidade desejada
   disability_type: "Pessoa com deficiência física" # Tipo da necessidade especial
 
-output_dir: "" # O endereço da pasta que receberá os documentos .pdf
+output_dir: "output/" # O endereço da pasta que receberá os documentos .pdf
 
+retry_limit: 3 # a quantidade de veses que o programa tentará baixar o mesmo .pdf
+
+debug_mode: 
+  enabled: False # quanto ativado, limita as quantidades de páginas acessadas e de documentos baixados
+  search_page_limit: 1
+  cv_download_limit: 5
