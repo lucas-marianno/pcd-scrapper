@@ -73,10 +73,14 @@ class ApiService:
                 total_pages = (
                     response.total_canditate_count // len(response.candidate_ids)
                 ) + 1
-                print(
-                    f"found {response.total_canditate_count} candidates"
-                    f" in {total_pages} pages"
+
+                resp = input(
+                    f"Foram encontrados {response.total_canditate_count} "
+                    f"{self.config.search_disability} em {self.config.search_location}!"
+                    f" Deseja iniciar o download??? (y/n)"
                 )
+                if resp != "y":
+                    raise Exception("download cancelado!!")
 
             print(f"current page: {p} of {total_pages}")
 

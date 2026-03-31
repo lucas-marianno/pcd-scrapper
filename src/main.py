@@ -27,10 +27,5 @@ def main():
     # fetch id list
     id_list = service.fetch_candidates_ids(auth_token, coordinates)
 
-    resp = input(f"Foram encontrados {len(id_list)} candidatos! Deseja iniciar o download??? (y/n)")
-    if resp != "y":
-        print("download cancelado. IDs encontrados:")
-        print(id_list)
-
     # download each cv
     service.download_cv(id_list)

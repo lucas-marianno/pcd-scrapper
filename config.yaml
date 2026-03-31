@@ -34,9 +34,9 @@ login:
 # - devem respeitar acentuação
 # - devem respeitar espaçamento
 search: 
-  key: "Vendedor" # Cargo procurado
-  location: "Belo horizonte, MG" # Cidade desejada
-  disability_type: "Pessoa com deficiência física" # Tipo da necessidade especial
+  key: "Promotor" # Cargo procurado
+  location: "Joinville, SC" # Cidade desejada
+  disability_type: "Pessoa com deficiência visual" # Tipo da necessidade especial
 
 output_dir: "output/" # O endereço da pasta que receberá os documentos .pdf
 
