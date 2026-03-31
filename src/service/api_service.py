@@ -119,6 +119,8 @@ class ApiService:
         search_job_role: str,
         search_disability: str,
     ):
+        if not id_list:
+            return
 
         file_limit = (
             self.config.cv_download_limit if self.config.is_debug_enabled else None

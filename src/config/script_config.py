@@ -31,8 +31,8 @@ class ScriptConfig:
 
         # init config from .env
         load_dotenv()
-        env_username = os.getenv("USERNAME")
-        env_password = os.getenv("PASSWORD")
+        env_username = os.getenv("EMPREGOS_USERNAME")
+        env_password = os.getenv("EMPREGOS_PASSWORD")
 
         if env_username is not None and env_password is not None:
             print("found USERNAME and PASSWORD in .env")
