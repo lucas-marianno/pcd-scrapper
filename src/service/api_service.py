@@ -104,61 +104,57 @@ class ApiService:
         retry_limit = self.config.retry_limit
 
         i = 0
-        while i < len(id_list):
-            id = id_list[i]
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=False)
+            page = browser.new_page()
 
-            try:
-                download_url = (
-                    f"{self.repository.api_config.download_url}/{id}?print=true"
-                )
-                output_filename = (
-                    f"{self.config.output_dir}"
-                    f"{self.config.search_location}/"
-                    f"{self.config.search_key}/"
-                    f"{self.config.search_disability}/{i + 1}.pdf"
-                )
-                save_as_pdf(download_url, output_filename)
+            while i < len(id_list):
+                id = id_list[i]
 
-                retry_count = 0
+                try:
+                    download_url = (
+                        f"{self.repository.api_config.download_url}/{id}?print=true"
+                    )
+                    output_filename = (
+                        f"{self.config.output_dir}"
+                        f"{self.config.search_location}/"
+                        f"{self.config.search_key}/"
+                        f"{self.config.search_disability}/{i + 1}.pdf"
+                    )
 
-            except PlaywrightTimeoutError:
-                print(f"Request timeout! try n# {retry_count} of {retry_limit}")
+                    page.goto(download_url)
+                    page.wait_for_load_state(state="networkidle", timeout=10000)
 
-                retry_count += 1
-                continue
-            except Exception as e:
-                print(e)
-                continue
+                    page.pdf(
+                        path=output_filename,
+                        format="A4",
+                        print_background=True,  # Keeps colors and images
+                        margin={
+                            "top": "1cm",
+                            "bottom": "1cm",
+                            "left": "1cm",
+                            "right": "1cm",
+                        },
+                    )
 
-            if retry_count > 0 and retry_count <= retry_limit:
-                continue
-            else:
-                i += 1
+                    print(f"Successfully saved: {output_filename}")
+                    retry_count = 0
 
+                except PlaywrightTimeoutError:
+                    print(f"Request timeout! try n# {retry_count} of {retry_limit}")
 
-def save_as_pdf(download_url, output_filename):
-    with sync_playwright() as p:
-        # Launch a headless browser
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
+                    retry_count += 1
+                    continue
+                except Exception as e:
+                    print(e)
+                    continue
 
-        # 1. Load the HTML content directly
-        page.goto(download_url)
-        # page.set_content(html_str)
+                if retry_count > 0 and retry_count <= retry_limit:
+                    continue
+                else:
+                    i += 1
 
-        # 2. Give the CSS/images a moment to load
-        page.wait_for_load_state("networkidle")
-
-        # 3. Print to PDF
-        page.pdf(
-            path=output_filename,
-            format="A4",
-            print_background=True,  # Keeps colors and images
-            margin={"top": "1cm", "bottom": "1cm", "left": "1cm", "right": "1cm"},
-        )
-
-        browser.close()
-        print(f"Successfully saved: {output_filename}")
+            browser.close()
 
 
 def parse_candidate_ids(json_response) -> CandidateResponse:
