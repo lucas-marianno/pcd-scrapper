@@ -1,6 +1,9 @@
+import os
 import requests
 
+
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from src.config.api_config import ApiConfig
 from src.config.script_config import ScriptConfig
 from src.dto.candidate_response import CandidateResponse
 from src.repository.api_repository import ApiRepository
@@ -22,17 +25,20 @@ class ApiService:
         token: str = login_response["token"]
         return token
 
-    def get_geolocation_coordinate(self, auth_token: str):
-        response = self.repository.get_geolocation(
-            auth_token, self.config.search_location
-        )
+    def get_geolocation_coordinate(self, auth_token: str, location: str) -> str:
+        response = self.repository.get_geolocation(auth_token, location)
 
         coordinates = response[0]["geoCoordinates"]
 
         return coordinates
 
     def fetch_candidates_ids(
-        self, auth_token: str, search_location_coordinates: str
+        self,
+        auth_token: str,
+        search_location_name: str,
+        search_location_coordinate: str,
+        search_job_role: str,
+        search_disability: str,
     ) -> list[int]:
         page_limit = (
             self.config.search_page_limit
@@ -51,9 +57,9 @@ class ApiService:
             try:
                 json_response = self.repository.post_candidate_search(
                     auth_token,
-                    self.config.search_key,
-                    search_location_coordinates,
-                    self.config.search_disability,
+                    search_job_role,
+                    search_location_coordinate,
+                    search_disability,
                     p,
                 )
                 retry_count = 0
@@ -67,6 +73,15 @@ class ApiService:
                 continue
 
             response = parse_candidate_ids(json_response)
+
+            if response.total_canditate_count == 0:
+                print(
+                    f"A pesquisa por {search_disability} em "
+                    f"{search_location_name} não teve resultados "
+                    f"para o cargo de {search_job_role}"
+                )
+                return []
+
             id_list.extend(response.candidate_ids)
 
             if p == 0:
@@ -74,13 +89,15 @@ class ApiService:
                     response.total_canditate_count // len(response.candidate_ids)
                 ) + 1
 
-                resp = input(
+                print(
                     f"Foram encontrados {response.total_canditate_count} "
-                    f"{self.config.search_disability} em {self.config.search_location}!"
-                    f" Deseja iniciar o download??? (y/n)"
+                    f"{search_disability} para o cargo de {search_job_role} "
+                    f"em {search_location_name}! "
                 )
-                if resp != "y":
-                    raise Exception("download cancelado!!")
+                if not self.config.no_confirm:
+                    resp = input("Deseja iniciar o download??? (y/n)")
+                    if resp != "y":
+                        raise Exception("download cancelado!!")
 
             print(f"current page: {p} of {total_pages}")
 
@@ -95,7 +112,13 @@ class ApiService:
 
         return id_list
 
-    def download_cv(self, id_list: list[int]):
+    def download_cv(
+        self,
+        id_list: list[int],
+        search_location_name: str,
+        search_job_role: str,
+        search_disability: str,
+    ):
 
         file_limit = (
             self.config.cv_download_limit if self.config.is_debug_enabled else None
@@ -111,23 +134,29 @@ class ApiService:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=False)
             page = browser.new_page()
+            id_list_len = len(id_list)
 
-            while i < len(id_list):
+            while i < id_list_len:
                 id = id_list[i]
 
                 try:
-                    download_url = (
-                        f"{self.repository.api_config.download_url}/{id}?print=true"
-                    )
+                    download_url = f"{ApiConfig.DOWNLOAD_URL}/{id}?print=true"
                     output_filename = (
                         f"{self.config.output_dir}"
-                        f"{self.config.search_location}/"
-                        f"{self.config.search_key}/"
-                        f"{self.config.search_disability}/{i + 1}.pdf"
+                        f"{search_location_name}/"
+                        f"{search_job_role}/"
+                        f"{search_disability}/{i + 1}.pdf"
                     )
 
+                    if os.path.exists(output_filename):
+                        print(
+                            f"File {output_filename} already exists. Download will be skipped!!!"
+                        )
+                        i += 1
+                        continue
+
                     page.goto(download_url)
-                    page.wait_for_load_state(state="networkidle", timeout=10000)
+                    page.wait_for_load_state(state="networkidle", timeout=5000)
 
                     page.pdf(
                         path=output_filename,
@@ -141,7 +170,9 @@ class ApiService:
                         },
                     )
 
-                    print(f"Successfully saved: {output_filename}")
+                    print(
+                        f"Successfully saved: {output_filename} | {i + 1}/{id_list_len}"
+                    )
                     retry_count = 0
 
                 except PlaywrightTimeoutError:
