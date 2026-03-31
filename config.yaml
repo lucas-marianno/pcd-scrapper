@@ -5,7 +5,7 @@
 #
 # 1. Adquira um email temporário em https://temp-mail.org/
 # - salve este email no campo `username` abaixo
-# 
+#
 # 2. Adquira um CNPJ aleatório em https://www.4devs.com.br/gerador_de_cnpj
 # - esse CNPJ será utilizado apenas cara criar a conta
 #
@@ -33,16 +33,26 @@ login:
 # - devem respeitar capitalização (maiúscula / minúscula)
 # - devem respeitar acentuação
 # - devem respeitar espaçamento
-search: 
-  key: "Vendedor" # Cargo procurado
-  location: "Belo horizonte, MG" # Cidade desejada
-  disability_type: "Pessoa com deficiência física" # Tipo da necessidade especial
+search:
+  job_roles: ["assistente"] # lista de cargos desejados. Ex: promotor, consultor comercial'
+  locations: ["Joinville, SC"] # lista de localizações para efetuar a busca. Exemplo: "Salvador, BA", "Osasco, SP"
+  disabilities:
+    [
+      "Pessoa com deficiência física",
+      "Pessoa com deficiência visual",
+      "Pessoa com deficiência auditiva",
+      "Pessoa com deficiência",
+      "Pessoa com deficiência mental",
+      "Pessoa com deficiência múltipla",
+    ]
 
 output_dir: "output/" # O endereço da pasta que receberá os documentos .pdf
 
 retry_limit: 3 # a quantidade de veses que o programa tentará baixar o mesmo .pdf
 
-debug_mode: 
-  enabled: False # quanto ativado, limita as quantidades de páginas acessadas e de documentos baixados
+no_confirm: True # quanto ativado, executa o download sem confirmação
+
+debug_mode:
+  enabled: True # quanto ativado, limita as quantidades de páginas acessadas e de documentos baixados
   search_page_limit: 1
   cv_download_limit: 5

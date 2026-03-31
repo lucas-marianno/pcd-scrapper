@@ -1,4 +1,3 @@
-import yaml
 from typing import final, override
 from dataclasses import dataclass
 
@@ -6,21 +5,10 @@ from dataclasses import dataclass
 @final
 @dataclass
 class ApiConfig:
-    login_url: str
-    search_url: str
-    download_url: str
-    geolocation_url: str
-
-    def __init__(self, config_file_name: str):
-        with open(config_file_name, "r") as f:
-            config = yaml.safe_load(f)
-
-            api_config = config["api_config"]
-
-            self.login_url = api_config["login_url"]
-            self.search_url = api_config["search_url"]
-            self.download_url = api_config["download_url"]
-            self.geolocation_url = api_config["geolocation_url"]
+    LOGIN_URL = "https://gatewayb2b.empregos.com.br/login2"
+    GEOLOCATION_URL = "https://gatewaywhitelabel.empregos.com.br/autocomplete/Location"
+    SEARCH_URL = "https://gatewaywhitelabel.empregos.com.br/candidate/search/auth"
+    DOWNLOAD_URL = "https://b2b.empregos.com.br/curriculos/pdf"
 
     @override
     def __str__(self):

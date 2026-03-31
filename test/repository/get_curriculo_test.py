@@ -5,7 +5,7 @@ from src.config.script_config import ScriptConfig
 
 def test_get_cv():
     repo = ApiRepository(
-        api_config=ApiConfig("src/api_config.yaml"),
+        api_config=ApiConfig(),
         script_config=ScriptConfig("config.yaml"),
     )
 

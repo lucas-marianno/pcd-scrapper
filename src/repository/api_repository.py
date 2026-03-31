@@ -1,16 +1,14 @@
+from warnings import deprecated
 import requests
 import requests_cache
 
-from src.config.script_config import ScriptConfig
 from src.config.api_config import ApiConfig
 
 
 class ApiRepository:
-    api_config: ApiConfig
     session: requests_cache.CachedSession
 
-    def __init__(self, api_config: ApiConfig, script_config: ScriptConfig) -> None:
-        self.api_config = api_config
+    def __init__(self) -> None:
         self.session = requests_cache.CachedSession(
             cache_name="__cached_session__",
             expire_after=60 * 60 * 4,  # 4 hours
@@ -24,7 +22,7 @@ class ApiRepository:
 
         print("building login request...")
 
-        url = self.api_config.login_url
+        url = ApiConfig.LOGIN_URL
 
         payload = {"email": username, "password": password}
         headers = {
@@ -68,7 +66,7 @@ class ApiRepository:
     def get_geolocation(self, auth_token: str, search_location: str) -> str:
         client = self.session or requests
 
-        url = self.api_config.geolocation_url
+        url = ApiConfig.GEOLOCATION_URL
 
         payload = {"term": search_location, "geolocation": None}
         headers = {
@@ -110,24 +108,22 @@ class ApiRepository:
     def post_candidate_search(
         self,
         auth_token: str,
-        search_key: str,
-        # search_location: str,
-        search_location_coordinates: str,
+        search_job_role: str,
+        search_location_coordinate: str,
         search_disability: str,
         page: int,
     ):
         client = self.session or requests
         print("building request")
 
-        url = self.api_config.search_url
+        url = ApiConfig.SEARCH_URL
 
         payload = {
-            "keyword": search_key,
+            "keyword": search_job_role,
             "filters": [
                 {
                     "facetItem": 18,
-                    "description": search_location_coordinates,
-                    # "subDescription": search_location,
+                    "description": search_location_coordinate,
                     "baseCityCode": 39,
                 },
                 {
@@ -180,11 +176,11 @@ class ApiRepository:
         print("got candidates")
         return response.json()
 
+    @deprecated("This function is used to download raw data instead of a .pdf file. It is incredibly faster than the method using playwright, but it is only suitable for data extraction only. PDF files are not rendereded properly")
     def get_curriculo(self, applicant_id: int):
         client = self.session or requests
 
-        # url = "https://b2b.empregos.com.br/curriculos/pdf/10593555"
-        url: str = f"{self.api_config.download_url}/{applicant_id}"
+        url: str = f"{ApiConfig.DOWNLOAD_URL}/{applicant_id}"
 
         querystring = {"print": "true"}
 
