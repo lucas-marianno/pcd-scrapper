@@ -63,11 +63,14 @@ class ApiService:
                     p,
                 )
                 retry_count = 0
+
             except requests.exceptions.Timeout:
                 print(f"Request timeout! try n# {retry_count} of {retry_limit}")
 
-                retry_count += 1
-                continue
+                if retry_count > 0 and retry_count <= retry_limit:
+                    retry_count += 1
+                    continue
+
             except Exception as e:
                 print(e)
                 continue
@@ -105,8 +108,6 @@ class ApiService:
 
             if is_loop_over:
                 break
-            elif retry_count > 0 and retry_count <= retry_limit:
-                continue
             else:
                 p += 1
 
@@ -180,16 +181,21 @@ class ApiService:
                 except PlaywrightTimeoutError:
                     print(f"Request timeout! try n# {retry_count} of {retry_limit}")
 
-                    retry_count += 1
-                    continue
+                    if retry_count > 0 and retry_count <= retry_limit:
+                        retry_count += 1
+                        continue
+                    elif retry_count >= retry_limit:
+                        retry_count = 0
+                        print(
+                            f"Failed to download: {output_filename} | {i + 1}/{id_list_len}\n"
+                            "Skipping to next cv. Please re-run this script"
+                        )
+
                 except Exception as e:
                     print(e)
                     continue
 
-                if retry_count > 0 and retry_count <= retry_limit:
-                    continue
-                else:
-                    i += 1
+                i += 1
 
             browser.close()
 
