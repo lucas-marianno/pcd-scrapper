@@ -3,6 +3,7 @@ import requests
 
 
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+
 from src.config.api_config import ApiConfig
 from src.config.script_config import ScriptConfig
 from src.dto.candidate_response import CandidateResponse
@@ -67,7 +68,7 @@ class ApiService:
             except requests.exceptions.Timeout:
                 print(f"fetch_candidates_ids timeout! try n# {retry_count} of {retry_limit}")
 
-                if retry_count <= retry_limit:
+                if retry_count < retry_limit:
                     retry_count += 1
                     continue
 
@@ -159,7 +160,7 @@ class ApiService:
                         continue
 
                     page.goto(download_url)
-                    page.wait_for_load_state(state="networkidle", timeout=5000)
+                    page.wait_for_selector("#printableResume", timeout=5000)
 
                     page.pdf(
                         path=output_filename,
@@ -181,7 +182,7 @@ class ApiService:
                 except PlaywrightTimeoutError:
                     print(f"download cv timeout! try n# {retry_count} of {retry_limit}")
 
-                    if retry_count <= retry_limit:
+                    if retry_count < retry_limit:
                         retry_count += 1
                         continue
                     elif retry_count >= retry_limit:
