@@ -65,9 +65,9 @@ class ApiService:
                 retry_count = 0
 
             except requests.exceptions.Timeout:
-                print(f"Request timeout! try n# {retry_count} of {retry_limit}")
+                print(f"fetch_candidates_ids timeout! try n# {retry_count} of {retry_limit}")
 
-                if retry_count > 0 and retry_count <= retry_limit:
+                if retry_count <= retry_limit:
                     retry_count += 1
                     continue
 
@@ -179,9 +179,9 @@ class ApiService:
                     retry_count = 0
 
                 except PlaywrightTimeoutError:
-                    print(f"Request timeout! try n# {retry_count} of {retry_limit}")
+                    print(f"download cv timeout! try n# {retry_count} of {retry_limit}")
 
-                    if retry_count > 0 and retry_count <= retry_limit:
+                    if retry_count <= retry_limit:
                         retry_count += 1
                         continue
                     elif retry_count >= retry_limit:
