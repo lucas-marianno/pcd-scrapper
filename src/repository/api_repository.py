@@ -10,8 +10,8 @@ class ApiRepository:
 
     def __init__(self) -> None:
         self.session = requests_cache.CachedSession(
-            cache_name="__cached_session__",
-            expire_after=60 * 60 * 4,  # 4 hours
+            cache_name=".requests_cache/session.sqlite",
+            expire_after=60 * 60 * 24,  # 24 hours
             backend="sqlite",
             allowable_methods=("GET", "POST"),
             ignored_parameters=["Authorization"],
