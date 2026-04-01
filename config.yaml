@@ -34,12 +34,12 @@ login:
 # - devem respeitar acentuação
 # - devem respeitar espaçamento
 search:
-  job_roles: ["assistente"] # lista de cargos desejados. Ex: promotor, consultor comercial'
-  locations: ["Joinville, SC"] # lista de localizações para efetuar a busca. Exemplo: "Salvador, BA", "Osasco, SP"
-  disabilities:
+  job_roles: ["Administrativo"] # lista de cargos desejados. Ex: promotor, consultor comercial'
+  locations: ["Osasco, SP"] # lista de localizações para efetuar a busca. Exemplo: "Salvador, BA", "Osasco, SP"
+  disabilities: # lista de deficiências que a serem buscadas (caso não encontras, pula a próxima)
     [
-      "Pessoa com deficiência física",
-      "Pessoa com deficiência visual",
+      "Pessoa com deficiência visual", # worker 2
+      "Pessoa com deficiência física", # worker 1
       "Pessoa com deficiência auditiva",
       "Pessoa com deficiência",
       "Pessoa com deficiência mental",
@@ -48,11 +48,11 @@ search:
 
 output_dir: "output/" # O endereço da pasta que receberá os documentos .pdf
 
-retry_limit: 3 # a quantidade de veses que o programa tentará baixar o mesmo .pdf
+retry_limit: 5 # a quantidade de veses que o programa tentará baixar o mesmo .pdf
 
-no_confirm: True # quanto ativado, executa o download sem confirmação
+no_confirm: False # quanto ativado, executa o download sem confirmação
 
 debug_mode:
-  enabled: True # quanto ativado, limita as quantidades de páginas acessadas e de documentos baixados
+  enabled: False # quanto ativado, limita as quantidades de páginas acessadas e de documentos baixados
   search_page_limit: 1
   cv_download_limit: 5

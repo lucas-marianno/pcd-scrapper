@@ -13,7 +13,7 @@ wheels/
 .env
 
 # requests_cache files
-__cached_session__.sqlite
+.requests_cache/
 
 # bruno-collection
 bruno-collection/

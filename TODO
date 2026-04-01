@@ -1,0 +1,15 @@
+add config.default.yaml
+  check for an existing config.yaml, if exists, use it otherwise create one copied from config.default.yaml
+  add config.yaml to .gitignore
+
+performance:
+  implement multi-tab for simultaneus scrapping
+  implement the concept of workers - completely separate python scripts running simultaneously
+
+implement logger (with timestamps, and logging levels)
+
+implement cli that takes both inline arguments and interactive mode for each parameter in config.yaml (and prompt user to save current settings to config.yaml)
+
+implement testing
+
+add cache duration to config.yaml (in hours)
