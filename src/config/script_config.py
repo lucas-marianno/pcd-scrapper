@@ -19,9 +19,11 @@ class ScriptConfig:
 
     output_dir: str
 
+    download_timeout: int
     retry_limit: int
+    ask_confirmation: bool
+    cache_duration:int
 
-    no_confirm: bool
 
     is_debug_enabled: bool
     search_page_limit: int | None
@@ -48,16 +50,20 @@ class ScriptConfig:
             self.search_locations = config["search"]["locations"]
             self.search_disabilities = config["search"]["disabilities"]
 
-            self.output_dir = config["output_dir"]
 
-            self.retry_limit = config["retry_limit"]
+            self.download_timeout = config["download"]["timeout"] or 5000
+            self.retry_limit = config["download"]["retry_limit"]
+            self.ask_confirmation = config["download"]["ask_confirmation"]
+            self.cache_duration = config["download"]["cache_duration"] or 6
+            self.output_dir = config["download"]["output_dir"]
 
-            self.no_confirm = config["no_confirm"]
             self.is_debug_enabled = config["debug_mode"]["enabled"] or False
 
             if self.is_debug_enabled:
                 self.search_page_limit = config["debug_mode"]["search_page_limit"]
                 self.cv_download_limit = config["debug_mode"]["cv_download_limit"]
+                self.output_dir += "debug/"
+
 
     @override
     def __str__(self):

@@ -98,7 +98,7 @@ class ApiService:
                     f"{search_disability} para o cargo de {search_job_role} "
                     f"em {search_location_name}! "
                 )
-                if not self.config.no_confirm:
+                if self.config.ask_confirmation:
                     resp = input("Deseja iniciar o download??? (y/n)")
                     if resp != "y":
                         raise Exception("download cancelado!!")
@@ -159,8 +159,9 @@ class ApiService:
                         i += 1
                         continue
 
-                    page.goto(download_url)
-                    page.wait_for_selector("#printableResume", timeout=5000)
+                    timeout = self.config.download_timeout //2
+                    page.goto(download_url,timeout=timeout)
+                    page.wait_for_selector("#printableResume", timeout=timeout)
 
                     page.pdf(
                         path=output_filename,

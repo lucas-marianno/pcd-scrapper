@@ -15,7 +15,7 @@ class PcdScrapper:
 
     def __init__(self) -> None:
         self.script_config = ScriptConfig("config.yaml")
-        self.repository = ApiRepository()
+        self.repository = ApiRepository(self.script_config.cache_duration)
         self.service = ApiService(self.repository, self.script_config)
 
         if self.script_config.is_debug_enabled:

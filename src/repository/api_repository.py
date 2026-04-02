@@ -8,10 +8,13 @@ from src.config.api_config import ApiConfig
 class ApiRepository:
     session: requests_cache.CachedSession
 
-    def __init__(self) -> None:
+    def __init__(self, cache_duration: int) -> None:
+        """
+        cache_duration -- the cache duration in hours
+        """
         self.session = requests_cache.CachedSession(
             cache_name=".requests_cache/session.sqlite",
-            expire_after=60 * 60 * 24,  # 24 hours
+            expire_after=60 * 60 * cache_duration,
             backend="sqlite",
             allowable_methods=("GET", "POST"),
             ignored_parameters=["Authorization"],
@@ -176,7 +179,9 @@ class ApiRepository:
         print("got candidates")
         return response.json()
 
-    @deprecated("This function is used to download raw data instead of a .pdf file. It is incredibly faster than the method using playwright, but it is only suitable for data extraction only. PDF files are not rendereded properly")
+    @deprecated(
+        "This function is used to download raw data instead of a .pdf file. It is incredibly faster than the method using playwright, but it is only suitable for data extraction only. PDF files are not rendereded properly"
+    )
     def get_curriculo(self, applicant_id: int):
         client = self.session or requests
 

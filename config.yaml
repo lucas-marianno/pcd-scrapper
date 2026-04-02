@@ -38,7 +38,7 @@ search:
   locations: ["Osasco, SP"] # lista de localizações para efetuar a busca. Exemplo: "Salvador, BA", "Osasco, SP"
   disabilities: # lista de deficiências que a serem buscadas (caso não encontras, pula a próxima)
     [
-      "Pessoa com deficiência visual", # worker 2
+      # "Pessoa com deficiência visual", # worker 2
       "Pessoa com deficiência física", # worker 1
       "Pessoa com deficiência auditiva",
       "Pessoa com deficiência",
@@ -46,11 +46,12 @@ search:
       "Pessoa com deficiência múltipla",
     ]
 
-output_dir: "output/" # O endereço da pasta que receberá os documentos .pdf
-
-retry_limit: 5 # a quantidade de veses que o programa tentará baixar o mesmo .pdf
-
-no_confirm: False # quanto ativado, executa o download sem confirmação
+download:
+  timeout: 5000 # tempo limite total (em mili-segundos) que download de cada .pdf pode levar. Quando o tempo limite for excedido, uma nova tentativa será executada. Padrão = 5000
+  retry_limit: 5 # a quantidade de vezes que o programa tentará baixar o mesmo .pdf antes de ir para o próximo. Padrão = 5
+  ask_confirmation: True # se deve ou não pedir confirmação antes de iniciar um pacote de downloads. Padrão = True
+  cache_duration: 24 # o tempo de duração do cache (em horas). Caso um download seja repetido, ao invés de acessar o site, ele acessa o banco de dados local. Evita acessos desnecessários ao site, e aumenta significativamente a velocidade de execução do programa. Padrão = 6
+  output_dir: "output/" # O endereço da pasta que receberá os documentos .pdf
 
 debug_mode:
   enabled: False # quanto ativado, limita as quantidades de páginas acessadas e de documentos baixados
