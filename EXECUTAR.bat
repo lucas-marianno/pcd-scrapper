@@ -1,4 +1,3 @@
-cls
 set PYTHONUTF8=1
-uv sync
+cls
 uv run python ./run.py
