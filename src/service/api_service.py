@@ -66,7 +66,9 @@ class ApiService:
                 retry_count = 0
 
             except requests.exceptions.Timeout:
-                print(f"fetch_candidates_ids timeout! try n# {retry_count} of {retry_limit}")
+                print(
+                    f"fetch_candidates_ids timeout! try n# {retry_count} of {retry_limit}"
+                )
 
                 if retry_count < retry_limit:
                     retry_count += 1
@@ -134,9 +136,11 @@ class ApiService:
         retry_count = 0
         retry_limit = self.config.retry_limit
 
+        is_first_download = True
+
         i = 0
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True)
             page = browser.new_page()
             id_list_len = len(id_list)
 
@@ -144,7 +148,7 @@ class ApiService:
                 id = id_list[i]
 
                 try:
-                    download_url = f"{ApiConfig.DOWNLOAD_URL}/{id}?print=true"
+                    download_url = f"{ApiConfig.DOWNLOAD_URL}/{id}"
                     output_filename = (
                         f"{self.config.output_dir}"
                         f"{search_location_name}/"
@@ -159,14 +163,18 @@ class ApiService:
                         i += 1
                         continue
 
-                    timeout = self.config.download_timeout //2
-                    page.goto(download_url,timeout=timeout)
+                    timeout = self.config.download_timeout // 2
+                    if is_first_download:
+                        # The page usually takes a while to get up to speed
+                        timeout = 15000
+                        is_first_download = False
+
+                    page.goto(download_url, timeout=timeout)
                     page.wait_for_selector("#printableResume", timeout=timeout)
 
                     page.pdf(
                         path=output_filename,
                         format="A4",
-                        print_background=True,  # Keeps colors and images
                         margin={
                             "top": "1cm",
                             "bottom": "1cm",
