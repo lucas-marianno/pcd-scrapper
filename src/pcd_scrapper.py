@@ -10,8 +10,8 @@ class PcdScrapper:
 
     auth_token: str
 
-    def __init__(self, script_config: ScriptConfig) -> None:
-        self.script_config = script_config
+    def __init__(self) -> None:
+        self.script_config = ScriptConfig()
         self.repository = ApiRepository(self.script_config.cache_duration)
         self.service = ApiService(self.repository, self.script_config)
 

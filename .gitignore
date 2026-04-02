@@ -9,8 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
-# Envirenment variables
+# Environment config
 .env
+config.yaml
 
 # requests_cache files
 .requests_cache/

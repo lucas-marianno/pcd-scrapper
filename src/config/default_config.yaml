@@ -38,8 +38,8 @@ search:
   locations: ["Osasco, SP"] # lista de localizações para efetuar a busca. Exemplo: "Salvador, BA", "Osasco, SP"
   disabilities: # lista de deficiências que a serem buscadas (caso não encontras, pula a próxima)
     [
-      # "Pessoa com deficiência visual", # worker 2
-      "Pessoa com deficiência física", # worker 1
+      "Pessoa com deficiência visual",
+      "Pessoa com deficiência física",
       "Pessoa com deficiência auditiva",
       "Pessoa com deficiência",
       "Pessoa com deficiência mental",
