@@ -3,9 +3,6 @@ from src.service.api_service import ApiService
 from src.repository.api_repository import ApiRepository
 
 
-# key: "Recepcionista" # Cargo procurado
-# location: "Osasco, SP" # Cidade desejada
-# disability_type: "Pessoa com deficiência visual" # Tipo da necessidade especial
 class PcdScrapper:
     script_config: ScriptConfig
     repository: ApiRepository
@@ -13,8 +10,8 @@ class PcdScrapper:
 
     auth_token: str
 
-    def __init__(self) -> None:
-        self.script_config = ScriptConfig("config.yaml")
+    def __init__(self, script_config: ScriptConfig) -> None:
+        self.script_config = script_config
         self.repository = ApiRepository(self.script_config.cache_duration)
         self.service = ApiService(self.repository, self.script_config)
 
@@ -26,7 +23,7 @@ class PcdScrapper:
             )
         self.auth_token = self.service.fetch_auth_token()
 
-    def run(self):
+    def start_scraping(self) -> None:
         locations = self.script_config.search_locations
         job_roles = self.script_config.search_job_roles
         disabilities = self.script_config.search_disabilities
@@ -38,7 +35,7 @@ class PcdScrapper:
                     self.scrape_cv(role, location, disability)
         print("")
 
-    def scrape_cv(self, role: str, location: str, disability: str):
+    def scrape_cv(self, role: str, location: str, disability: str) -> None:
         coordinates = self.service.get_geolocation_coordinate(self.auth_token, location)
 
         id_list = self.service.fetch_candidates_ids(
@@ -49,14 +46,9 @@ class PcdScrapper:
             disability,
         )
 
-
         self.service.download_cv(
             id_list,
             location,
             role,
             disability,
         )
-
-
-def main():
-    PcdScrapper().run()
