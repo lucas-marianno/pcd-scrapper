@@ -11,7 +11,7 @@ wheels/
 
 # Environment config
 .env
-config.yaml
+CONFIG.yaml
 
 # requests_cache files
 .requests_cache/

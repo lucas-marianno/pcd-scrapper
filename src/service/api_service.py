@@ -172,6 +172,10 @@ class ApiService:
                     page.goto(download_url, timeout=timeout)
                     page.wait_for_selector("#printableResume", timeout=timeout)
 
+                    page.locator(
+                        "#printableResume > div.w-full.flex.justify-center"
+                    ).evaluate("e => e.remove()")
+
                     page.pdf(
                         path=output_filename,
                         format="A4",
